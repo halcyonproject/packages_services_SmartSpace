@@ -25,6 +25,7 @@ import android.widget.FrameLayout;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewpager.widget.ViewPager;
 import com.android.systemui.bcsmartspace.R;
+import com.android.systemui.plugins.BcSmartspaceConfigPlugin;
 import com.android.systemui.plugins.BcSmartspaceDataPlugin;
 import com.android.systemui.plugins.FalsingManager;
 import com.google.android.systemui.smartspace.CardPagerAdapter;
@@ -48,6 +49,7 @@ public class BcSmartspaceView extends FrameLayout implements BcSmartspaceDataPlu
     public boolean mAnimateSmartspaceUpdate;
     public final ContentObserver mAodObserver;
     public Handler mBgHandler;
+    public BcSmartspaceConfigPlugin mConfigProvider;
     public int mCardPosition;
     public BcSmartspaceDataPlugin mDataProvider;
     public boolean mIsAodEnabled;
@@ -61,6 +63,7 @@ public class BcSmartspaceView extends FrameLayout implements BcSmartspaceDataPlu
 
     public BcSmartspaceView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
+        this.mConfigProvider = new DefaultBcSmartspaceConfigProvider();
         this.mLastReceivedTargets = new ArraySet<>();
         this.mIsAodEnabled = false;
         this.mCardPosition = 0;
@@ -72,7 +75,7 @@ public class BcSmartspaceView extends FrameLayout implements BcSmartspaceDataPlu
                 BcSmartspaceView.this.onSettingsChanged();
             }
         };
-        this.mAdapter = new CardPagerAdapter(this);
+        this.mAdapter = new CardPagerAdapter(this, this.mConfigProvider);
         this.mOnPageChangeListener = new ViewPager.OnPageChangeListener() { // from class: com.google.android.systemui.smartspace.BcSmartspaceView.2
             public void onPageScrollStateChanged(int state) {
                 List<? extends Parcelable> list;
@@ -125,6 +128,12 @@ public class BcSmartspaceView extends FrameLayout implements BcSmartspaceDataPlu
         if (this.mDataProvider != null) {
             this.mDataProvider.notifySmartspaceEvent(new SmartspaceTargetEvent.Builder(isVisible ? 6 : 7).build());
         }
+    }
+
+    @Override // com.android.systemui.plugins.BcSmartspaceDataPlugin.SmartspaceView
+    public final void registerConfigProvider(BcSmartspaceConfigPlugin bcSmartspaceConfigPlugin) {
+        this.mConfigProvider = bcSmartspaceConfigPlugin;
+        this.mAdapter.configProvider = bcSmartspaceConfigPlugin;
     }
 
     @Override // android.view.View
@@ -188,7 +197,7 @@ public class BcSmartspaceView extends FrameLayout implements BcSmartspaceDataPlu
     public void setBgHandler(Handler handler) {
         this.mBgHandler = handler;
     }
-    
+
     public void onSmartspaceTargetsUpdated(List<? extends Parcelable> list) {
         int i;
         BaseTemplateCard baseTemplateCard;
@@ -251,8 +260,10 @@ public class BcSmartspaceView extends FrameLayout implements BcSmartspaceDataPlu
                 this.mAdapter.mHasDifferentTargets = true;
             }
         });
-        this.mAdapter.addDefaultDateCardIfEmpty(this.mAdapter.mAODTargets);
-        this.mAdapter.addDefaultDateCardIfEmpty(this.mAdapter.mLockscreenTargets);
+        if (!this.mAdapter.configProvider.isDefaultDateWeatherDisabled()) {
+            this.mAdapter.addDefaultDateCardIfEmpty(this.mAdapter.mAODTargets);
+            this.mAdapter.addDefaultDateCardIfEmpty(this.mAdapter.mLockscreenTargets);
+        }
         this.mAdapter.updateTargetVisibility();
         this.mAdapter.notifyDataSetChanged();
         int count = this.mAdapter.getCount();

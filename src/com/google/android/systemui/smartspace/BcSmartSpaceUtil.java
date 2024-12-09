@@ -105,19 +105,26 @@ public final class BcSmartSpaceUtil {
         setOnClickListener(bcSmartspaceCardSecondary, smartspaceTarget, tapAction, smartspaceEventNotifier, str, bcSmartspaceCardLoggingInfo, 0);
     }
 
+    public static void setOnClickListener(View view, SmartspaceTarget smartspaceTarget, SmartspaceAction smartspaceAction, BcSmartspaceDataPlugin.SmartspaceEventNotifier smartspaceEventNotifier, String str, BcSmartspaceCardLoggingInfo bcSmartspaceCardLoggingInfo) {
+        setOnClickListener(view, smartspaceTarget, smartspaceAction, smartspaceEventNotifier, str, bcSmartspaceCardLoggingInfo, 0);
+    }
+
     public static Drawable getIconDrawable(Context context, Icon icon) {
+        return getIconDrawableWithCustomSize(icon, context, context.getResources().getDimensionPixelSize(R.dimen.enhanced_smartspace_icon_size));
+    }
+
+    public static Drawable getIconDrawableWithCustomSize(Icon icon, Context context, int i) {
         Drawable bitmapDrawable;
         if (icon == null) {
             return null;
         }
-        if (icon.getType() == 1 || icon.getType() == 5) {
-            bitmapDrawable = new BitmapDrawable(context.getResources(), icon.getBitmap());
-        } else {
+        if (icon.getType() != 1 && icon.getType() != 5) {
             bitmapDrawable = icon.loadDrawable(context);
+        } else {
+            bitmapDrawable = new BitmapDrawable(context.getResources(), icon.getBitmap());
         }
         if (bitmapDrawable != null) {
-            int dimensionPixelSize = context.getResources().getDimensionPixelSize(R.dimen.enhanced_smartspace_icon_size);
-            bitmapDrawable.setBounds(0, 0, dimensionPixelSize, dimensionPixelSize);
+            bitmapDrawable.setBounds(0, 0, i, i);
         }
         return bitmapDrawable;
     }
@@ -140,7 +147,7 @@ public final class BcSmartSpaceUtil {
             // Ensure we don't change date view
             return false;
         }
-        if (smartspaceTarget != null && smartspaceTarget.getFeatureType() == SmartspaceTarget.FEATURE_WEATHER) { 
+        if (smartspaceTarget != null && smartspaceTarget.getFeatureType() == SmartspaceTarget.FEATURE_WEATHER) {
             Intent intent = new Intent().setComponent(new ComponentName(GSA_PACKAGE, GSA_WEATHER_ACTIVITY))
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intentStarter.startIntent(v, intent, true);
@@ -185,6 +192,29 @@ public final class BcSmartSpaceUtil {
         }
         return null;
     }
+
+    public static int getLoggingDisplaySurface(float f, String str) {
+        if (str == null) {
+            return 0;
+        }
+
+        if (str.equals(BcSmartspaceDataPlugin.UI_SURFACE_HOME_SCREEN)) {
+            return 1;
+        } else if (str.equals(BcSmartspaceDataPlugin.UI_SURFACE_DREAM)) {
+            return 5;
+        } else if (str.equals(BcSmartspaceDataPlugin.UI_SURFACE_LOCK_SCREEN_AOD)) {
+            if (f == 1.0f) {
+                return 3;
+            } else if (f == 0.0f) {
+                return 2;
+            } else {
+                return -1;
+            }
+        } else {
+            return 0;
+        }
+    }
+
 
     public static int getLoggingDisplaySurface(String str, boolean z, float f) {
         if (str.equals("com.google.android.apps.nexuslauncher")) {

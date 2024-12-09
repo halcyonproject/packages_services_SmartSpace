@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:androidprv="http://schemas.android.com/apk/prv/res/android">
     <dimen name="ambient_text_shadow_radius">1.5dip</dimen>
+    <dimen name="date_weather_view_height">24.0dp</dimen>
     <dimen name="enhanced_smartspace_base_action_icon_margin">8dp</dimen>
     <dimen name="enhanced_smartspace_card_height">76dp</dimen>
     <dimen name="enhanced_smartspace_combination_card_padding">8dp</dimen>
@@ -18,6 +19,7 @@
     <dimen name="enhanced_smartspace_secondary_card_start_margin">1dp</dimen>
     <dimen name="enhanced_smartspace_subtitle_margin_top">9dp</dimen>
     <dimen name="enhanced_smartspace_subtitle_size">16sp</dimen>
+    <dimen name="enhanced_smartspace_text_size_medium">16.0sp</dimen>
     <dimen name="enhanced_smartspace_title_size">20sp</dimen>
     <dimen name="key_text_shadow_dx">0.5dip</dimen>
     <dimen name="key_text_shadow_dy">0.5dip</dimen>
