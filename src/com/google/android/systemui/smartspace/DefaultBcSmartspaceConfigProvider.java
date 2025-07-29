@@ -7,4 +7,12 @@ public final class DefaultBcSmartspaceConfigProvider implements BcSmartspaceConf
     public final boolean isDefaultDateWeatherDisabled() {
         return false;
     }
+    @Override
+    public final boolean isViewPager2Enabled() {
+        return false;
+    }
+    @Override
+    public final boolean isSwipeEventLoggingEnabled() {
+        return false;
+    }
 }
